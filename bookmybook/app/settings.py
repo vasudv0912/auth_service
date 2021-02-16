@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
-    'djongo',    
+    'django_mongoengine',    
 ]
 
 MIDDLEWARE = [
@@ -76,12 +76,15 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-       'default': {
-           'ENGINE': 'djongo',
-           'NAME': 'books',
-       }
-   }
+MONGODB_DATABASES = {
+    "default": {
+        "name": "books",
+        "host": "localhost",
+        "password": "osmentos",
+        "username": "root",
+        "tz_aware": True, # if you using timezones in django (USE_TZ = True)
+    },
+}
 
 
 # Password validation
