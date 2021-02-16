@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +25,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
 
 # Application definition
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'rest_framework',
-    
+    'djongo',    
 ]
 
 MIDDLEWARE = [
@@ -76,24 +77,11 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-
-    'default': {
-
-        'ENGINE': 'djongo',
-
-        'NAME': 'books',
-
-        'USER': 'root',
-
-        'PASSWORD': 'osmentos',
-
-        'HOST': 'localhost',
-
-        'PORT': '27017',
-
-    }
-
-}
+       'default': {
+           'ENGINE': 'djongo',
+           'NAME': 'books',
+       }
+   }
 
 
 # Password validation

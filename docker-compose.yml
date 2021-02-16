@@ -2,9 +2,6 @@ version: '3.7'
 
 volumes:
   data-db:
-
-
-
 services:
   web:
     build: ./bookmybook
@@ -16,8 +13,8 @@ services:
       - 8000
     links:
       - mongodb
-    depends_on:
-      - migration
+    # depends_on:
+    #   - migration
     env_file:
       - ./.env.dev
 
@@ -33,27 +30,27 @@ services:
     ports:
       - 27017:27017
 
-  migration:
-    build: .
-    image: bookmybook
-    command: python manage.py migrate
-    volumes:
-      - ./bookmybook/:/usr/src/bookmybook/
-    links:
-      - mongodb
-    depends_on:
-      - make_migrations
+  # migration:
+  #   build: .
+  #   image: bookmybook
+  #   command: python manage.py migrate
+  #   volumes:
+  #     - ./bookmybook/:/usr/src/bookmybook/
+  #   links:
+  #     - mongodb
+  #   depends_on:
+  #     - make_migrations
 
-  make_migrations:
-    build: .
-    image: bookmybook
-    command: python manage.py makemigrations
-    volumes:
-      - ./bookmybook/:/usr/src/bookmybook/
-    links:
-      - mongodb
-    depends_on:
-      - mongodb
+  # make_migrations:
+  #   build: .
+  #   image: bookmybook
+  #   command: python manage.py makemigrations
+  #   volumes:
+  #     - ./bookmybook/:/usr/src/bookmybook/
+  #   links:
+  #     - mongodb
+  #   depends_on:
+  #     - mongodb
 
   nginx:
     build: ./nginx
