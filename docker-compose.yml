@@ -1,64 +1,45 @@
 version: '3.7'
 
 volumes:
-  data-db:
+    mysql:
+    bookmybook:
+    sql:  
 
 
 
 services:
+
+  db:
+    command: mysqld
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    environment:
+       MYSQL_DATABASE: 'books'
+       MYSQL_USER: 'root'
+       MYSQL_PASSWORD: 'osmentos'
+       MYSQL_ROOT_PASSWORD: 'osmentos'
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
   web:
     build: ./bookmybook
     image: bookmybook
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./bookmybook/:/usr/src/bookmybook/
+      - ./mysql:/var/lib/mysql
     expose:
       - 8000
-    links:
-      - mongodb
     depends_on:
-      - migration
+      - db
     env_file:
       - ./.env.dev
-
-  mongodb:
-    image: mongo
-    restart: always
-    volumes:
-      - ./data-db:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: osmentos
-      MONGO_INITDB_DATABASE: books
-    ports:
-      - 27017:27017
-
-  migration:
-    build: .
-    image: bookmybook
-    command: python manage.py migrate
-    volumes:
-      - ./bookmybook/:/usr/src/bookmybook/
-    links:
-      - mongodb
-    depends_on:
-      - make_migrations
-
-  make_migrations:
-    build: .
-    image: bookmybook
-    command: python manage.py makemigrations
-    volumes:
-      - ./bookmybook/:/usr/src/bookmybook/
-    links:
-      - mongodb
-    depends_on:
-      - mongodb
-
+  
   nginx:
     build: ./nginx
     ports:
-      - 1337:80
+      - 80:80
     depends_on:
       - web
 
