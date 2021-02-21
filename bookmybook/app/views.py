@@ -60,6 +60,13 @@ class Book(APIView):
 
 	def post (self,request,format=None):
 		print(request.user_id)
-		producer = KafkaProducer(bootstrap_servers='localhost:9092')
-		producer.send('book', json.dumps(request.data).encode('utf-8'))
+		# producer = KafkaProducer(bootstrap_servers='127.0.0.1:9091')
+		# producer.send('book', json.dumps(request.data).encode('utf-8'))
+		# return Response({'msg':'Book Received'}, status=status.HTTP_200_OK)
+		bootstrap_servers = ['172.17.0.1:9091']
+		KAFKA_VERSION = (0,11,5)
+		topicName = 'books'
+		producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
+		producer.send(topicName, b'Hello World!')
+		print(">>")
 		return Response({'msg':'Book Received'}, status=status.HTTP_200_OK)

@@ -16,6 +16,7 @@ def token_required(func):
             if len(tokens) == 2:
                 
                 try:
+                    print(client.get(tokens[0]).decode('utf-8'),tokens[1])
                     if client.get(tokens[0]).decode('utf-8') == tokens[1]:
                         request.user_id = tokens[0]
                         request.token=tokens[1]
