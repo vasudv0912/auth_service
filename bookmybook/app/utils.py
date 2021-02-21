@@ -14,12 +14,13 @@ def token_required(func):
         if auth_header is not None:
             tokens = auth_header.split(' ')
             if len(tokens) == 2:
-                request.token = tokens[1]
+                
                 try:
-                    if client.get(tokens[0]).decode('utf-8') == request.token:
+                    if client.get(tokens[0]).decode('utf-8') == tokens[1]:
+                        request.user_id = tokens[0]
+                        request.token=tokens[1]
                         return func(self, request)
                 except Exception as e :
-                    print(e)
                     return Response({'error': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({'error': 'Invalid Header'}, status=status.HTTP_401_UNAUTHORIZED)
     return inner

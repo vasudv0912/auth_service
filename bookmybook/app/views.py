@@ -8,6 +8,7 @@ from app.utils import token_required
 import redis
 from app.utils import generate_token
 from kafka import KafkaProducer
+import json
 
 client = redis.Redis(
 host='redis',
@@ -58,6 +59,7 @@ class Book(APIView):
 	@token_required
 
 	def post (self,request,format=None):
-		producer = KafkaProducer(bootstrap_servers='kafka:9092')
-		producer.send('book', "hello")
+		print(request.user_id)
+		producer = KafkaProducer(bootstrap_servers='localhost:9092')
+		producer.send('book', json.dumps(request.data).encode('utf-8'))
 		return Response({'msg':'Book Received'}, status=status.HTTP_200_OK)
