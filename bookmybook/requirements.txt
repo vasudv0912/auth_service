@@ -3,3 +3,5 @@ gunicorn
 djangorestframework
 mysqlclient
 django-mysql
+redis
+kafka-python

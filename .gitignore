@@ -1,3 +1,5 @@
-sq/l
+sql/
 mysql/
-bookmybook/app/__pycache_/_
+bookmybook/app/__pycache__/
+zookeeper_data/
+kafka_data/
