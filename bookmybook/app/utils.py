@@ -14,7 +14,6 @@ def token_required(func):
         if auth_header is not None:
             tokens = auth_header.split(' ')
             if len(tokens) == 2:
-                
                 try:
                     print(client.get(tokens[0]).decode('utf-8'),tokens[1])
                     if client.get(tokens[0]).decode('utf-8') == tokens[1]:

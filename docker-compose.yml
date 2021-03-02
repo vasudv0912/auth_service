@@ -22,6 +22,8 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - server_kafka_net
 
   web:
     build: ./bookmybook
@@ -30,19 +32,24 @@ services:
     volumes:
       - ./bookmybook/:/usr/src/bookmybook/
       - ./mysql:/var/lib/mysql
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
     depends_on:
       - db
     env_file:
       - ./.env.dev
+    networks:
+      - server_kafka_net
+
   
-  nginx:
-    build: ./nginx
-    ports:
-      - 80:80
-    depends_on:
-      - web
+  # nginx:
+  #   build: ./nginx
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - web
+  #   networks:
+  #     - server_kafka_net
 
   redis:
     image: redis:latest
@@ -51,26 +58,9 @@ services:
     volumes:
         - ./redis.conf:/redis.conf
     command: [ "redis-server", "/redis.conf" ]
+    networks:
+      - server_kafka_net
 
-  # zookeeper:
-  #   image: 'docker.io/bitnami/zookeeper:3-debian-10'
-  #   ports:
-  #     - '2181:2181'
-  #   volumes:
-  #     - 'zookeeper_data:/bitnami'
-  #   environment:
-  #   - ALLOW_ANONYMOUS_LOGIN=yes
-  # kafka:
-  #   image: 'docker.io/bitnami/kafka:2-debian-10'
-  #   ports:
-  #     - '9092:9092'
-  #   volumes:
-  #     - 'kafka_data:/bitnami'
-  #   environment:
-  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-  #     - ALLOW_PLAINTEXT_LISTENER=yes
-  #   depends_on:
-  #     - zookeeper
-
-
-
+networks:
+   server_kafka_net:
+     external: true

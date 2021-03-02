@@ -66,7 +66,8 @@ class Book(APIView):
 		bootstrap_servers = ['172.17.0.1:9091']
 		KAFKA_VERSION = (0,11,5)
 		topicName = 'books'
-		producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
-		producer.send(topicName, b'Hello World!')
+		producer = KafkaProducer(bootstrap_servers = bootstrap_servers,value_serializer=lambda v: json.dumps(v).encode('utf-8'))
+		producer.send(topicName, request.data)
+		producer.flush()
 		print(">>")
 		return Response({'msg':'Book Received'}, status=status.HTTP_200_OK)
