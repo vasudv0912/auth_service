@@ -22,6 +22,9 @@ urlpatterns = [
 
 	path('register/', views.Register.as_view(), name='Register'),
 	path('login/', views.GetToken.as_view(), name='GetToken'),
-	path('book/', views.Book.as_view(), name='Book'),
+	path('book/add', views.AddBook.as_view(), name='AddBook'),
+    path('book/issue', views.IssueBook.as_view(), name='IssueBook'),
+    path('book/edit', views.EditBook.as_view(), name='EditBook'),
+    path('book/release', views.ReturnBook.as_view(), name='ReleaseBook'),
 
 ]
