@@ -5,3 +5,4 @@ mysqlclient
 django-mysql
 redis
 kafka-python
+grpc_requests

@@ -15,3 +15,8 @@ class Token(models.Model):
 
     def __unicode__(self):
         return self.token
+
+
+class Pin(models.Model):
+	user_id = models.IntegerField()
+	pin = models.IntegerField()
