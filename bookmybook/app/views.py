@@ -19,8 +19,8 @@ client = redis.Redis(
     port=6379)
 
 
-
-grpc = Client.get_by_endpoint("library:50051")
+grpc = Client.get_by_endpoint("library:50059")
+grpc2 = Client.get_by_endpoint("transaction:5007")
 # if you want connect tls
 # client = Client.get_by_endpoint("localhost:443",ssl=True)
 # or if you want Compression connect
@@ -33,7 +33,8 @@ assert health.method_names == ('Check', 'Watch')
 result = health.Check()
 assert result == {'status': 'SERVING'}
 
-library = grpc.service("library.Library")
+library = grpc.service("GetBookdetails")
+transaction = grpc2.service("TransactionServices")
 
 
 class Register(APIView):
@@ -45,10 +46,10 @@ class Register(APIView):
         user.last_name = params['last_name']
         user.email = params['email']
         user.save()
-        pin = Pin()
-        pin.user_id = user.id
-        pin.pin = random.randint(999, 9999)
-        pin.save()
+        create_pin = Pin()
+        create_pin.user_id = user.id
+        create_pin.pin = random.randint(999, 9999)
+        create_pin.save()
         wallet_bal = {"user_id": user.id, "balance": 0}
         topicName = 'wallet'
         producer = KafkaProducer(bootstrap_servers=bootstrap_servers,
@@ -59,7 +60,7 @@ class Register(APIView):
         # result = library.SayHello(request_data)
         # print(result)
 
-        return Response({'msg':"USER REGISTERED"}, status=status.HTTP_200_OK)
+        return Response({'msg': "USER REGISTERED"}, status=status.HTTP_200_OK)
 
 
 class GetToken(APIView):
@@ -95,14 +96,13 @@ class AddBook(APIView):
 
     @token_required
     def post(self, request, format=None):
+        # Added New Key to the request object
         request.data['owner_id'] = request.user_id
-        print(request.data)
         topicName = 'add_book'
         producer = KafkaProducer(bootstrap_servers=bootstrap_servers,
                                  value_serializer=lambda v: json.dumps(v).encode('utf-8'))
         producer.send(topicName, request.data)
         producer.flush()
-        print(">>")
         return Response({'msg': 'Book Received'}, status=status.HTTP_200_OK)
 
 
@@ -133,6 +133,7 @@ class EditBook(APIView):
 
 
 class ReleaseBook(APIView):
+
     @token_required
     def post(self, request, format=None):
         request.data['current_owner_id'] = request.user_id
@@ -145,6 +146,7 @@ class ReleaseBook(APIView):
 
 
 class DeleteBook(APIView):
+
     @token_required
     def post(self, request, format=None):
         request.data['current_owner_id'] = request.user_id
@@ -156,11 +158,12 @@ class DeleteBook(APIView):
         return Response({'msg': 'Book Deleted '}, status=status.HTTP_200_OK)
 
 
-class Wishlist(APIView):
+class GetWishlists(APIView):
+
     @token_required
     def post(self, request, format=None):
         request.data['user_id'] = request.user_id
-        topicName = 'wishlist'
+        topicName = 'wishlists'
         producer = KafkaProducer(bootstrap_servers=bootstrap_servers,
                                  value_serializer=lambda v: json.dumps(v).encode('utf-8'))
         producer.send(topicName, request.data)
@@ -168,7 +171,8 @@ class Wishlist(APIView):
         return Response({'msg': 'Book Added To Your Wishlist '}, status=status.HTTP_200_OK)
 
 
-class Transaction(APIView):
+class GetTransactions(APIView):
+
     @token_required
     def post(self, request, format=None):
         pin = Pin.objects.get(user_id=request.user_id)
@@ -184,21 +188,32 @@ class Transaction(APIView):
             return Response({'msg': 'Invalid Pin'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GetBookDetails(APIView):
 
-
-class  GetBookdetails(APIView):
     @token_required
-    def get(self,request,format=None):
-        request_data = {"book_id": request.data['book_id']}
-        result = library.GetBookDetails(request_data)
-        print(result)
-
+    def get(self, request, format=None):
+        result = library.bookDetails({"book_id": request.data['book_id']})
         return Response(result, status=status.HTTP_200_OK)
 
 
-
 class GetAvailableBooks(APIView):
+
     @token_required
-    def get(self,request,format=None):
-        result=library.GetAvailableBooks()
-        return Response(result,status=status.HTTP_200_OK)
+    def get(self, request, format=None):
+        result = library.availableBooks()
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class GetBookRecord(APIView):
+
+    @token_required
+    def get(self, request, format=None):
+        result = library.bookRecord({"book_id": request.data['book_id']})
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class GetWalletBalance(APIView):
+    @token_required
+    def get(self, request, format=None):
+        result = transaction.getBalance({"user_id": request.data['user_id']})
+        return Response(result, status=status.HTTP_200_OK)

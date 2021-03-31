@@ -27,9 +27,11 @@ urlpatterns = [
     path('book/edit', views.EditBook.as_view(), name='EditBook'),
     path('book/release', views.ReleaseBook.as_view(), name='ReleaseBook'),
     path('book/delete', views.DeleteBook.as_view(), name='DeleteBook'),
-    path('book/wishlist', views.Wishlist.as_view(), name='Wishlist'),
-    path('transaction', views.Transaction.as_view(), name='Transaction'),
-    path('getbookdetails', views.GetBookdetails.as_view(), name='GetBookdetails'),
-    path('book/list', views.GetAvailableBooks.as_view(), name='GetAvailableBooks'),
+    path('book/wishlist', views.GetWishlists.as_view(), name='GetWishlists'),
+    path('transaction', views.GetTransactions.as_view(), name='GetTransactions'),
+    path('book/bookdetails', views.GetBookDetails.as_view(), name='GetBookDetails'),
+    path('book/availablebooks', views.GetAvailableBooks.as_view(), name='GetAvailableBooks'),
+    path('book/record', views.GetBookRecord.as_view(), name='GetBookRecord'),
+    path('wallet/balance', views.GetWalletBalance.as_view(), name='GetWalletBalance'),
 
 ]
